@@ -223,3 +223,5 @@ func NewAccount2() {
 	wallet.AccountData2 = append(wallet.AccountData2, *b)
 	wallet.AccountData2 = append(wallet.AccountData2, *c)
 }
+
+// 测试更改
