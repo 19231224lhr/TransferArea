@@ -8,6 +8,8 @@ import (
 	"transfer/core"
 )
 
+// 测试更改
+
 // Wallet stores private and public keys
 type Wallet struct {
 	PrivateKey ecdsa.PrivateKey // 钱包私钥 (账号)
