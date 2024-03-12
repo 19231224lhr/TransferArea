@@ -8,9 +8,6 @@ import (
 	"transfer/core"
 )
 
-// const version = byte(0x00)
-// const addressChecksumLen = 4
-
 // Wallet stores private and public keys
 type Wallet struct {
 	PrivateKey ecdsa.PrivateKey // 钱包私钥 (账号)
