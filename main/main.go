@@ -15,7 +15,8 @@ import (
 func main() {
 	// 模拟服务器的账户密码数据，在这里我们新建三个用户账户数据
 	NewAccount()
-
+	a, _ := crypto.GenerateKey()
+	fmt.Println(a)
 	fmt.Println("> 欢迎登录盘古区块链转账系统")
 	fmt.Println("> 请您输入自己的钱包密码登录钱包")
 	result, Account, w, err := wallet.LoginWallets()
