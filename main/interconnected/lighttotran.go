@@ -3,10 +3,9 @@ package interconnected
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"transfer/core"
-	"transfer/wallet"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // 轻计算区 -> 转账区
@@ -26,55 +25,59 @@ type ToTransferAccount struct {
 // ToTransfer 跨区交易ToTransfer轻计算区向转账区转钱
 // 第一个返回值bool表示是否成功转账，默认向Publickey对应的地址转账，没有就创建新的地址，并返回ToTransferAccount信息 TODO: 但是目前无法根据已知的公钥创建对应的私钥
 // 不需要私钥信息，按照Coinbase交易构造 TODO:现在互相信任，认为对方转账一定能成功，所以去掉第一个bool值
-func ToTransfer(FromAddress common.Address, Publickey ecdsa.PublicKey, Money int) (ToTransferAccount, core.Transaction) {
+func ToTransfer(FromAddress common.Address, BAddress common.Address, Money int) bool {
 	fmt.Println("> 开始执行轻计算区 转 转账区 账户转换")
 
+	// var B []byte
+	// B[0] = 'H'
+	// B[1] = 'E'
+	// B[2] = 'L'
+	// B[3] = 'L'
+	// B[4] = 'O'
+
+	// FromAddress = common.BytesToAddress(B)
+
 	// TODO:存在一点问题，输入的应该是账号和密码，系统显示子地址让用户选择，现在输入的是多钱包的公私钥但是多钱包地址无法转账
+	// TODO: 现阶段先按照传入地址一定存在来写
 	// 因为存在旧帐户和新账户两种情况，所以需要统一收集信息
-	var BAddress common.Address // 目标地址
-	var Pubkey ecdsa.PublicKey  // 账户公钥
-	var UserAccount string      // 发送者账户
-	var IsNew bool = true       // 是否需要新建账户
-	var reAccount ToTransferAccount
+	// var Pubkey ecdsa.PublicKey  // 账户公钥
+	var UserAccount string // 发送者账户
+	// var IsNew bool = true       // 是否需要新建账户
+	// var reAccount ToTransferAccount
 
-	// 使用已有账户，检查目标公钥是否存在
-	//BAddress := crypto.PubkeyToAddress(Publickey)
-	// 更改为多钱包账户
-	for _, v := range wallet.AccountData2 {
-		// k是Account，v是密码，公钥，私钥的结构体
-		if v.Publickey == Publickey {
-			// 公钥正确，说明存在对应地址
-			fmt.Println("> 目标地址存在")
-			UserAccount = v.Account
-			IsNew = false
-			Pubkey = Publickey
-		}
-	}
-	if IsNew == true {
-		fmt.Println("> 目标地址不存在")
-		// 将目标地址设置为新建钱包的公钥 TODO: 暂时无法实现，创建新账户
-		// 创建新的账户与地址 TODO: 后续可以设置为用户自定义账户信息
-		a, _ := crypto.GenerateKey()
-		wallet.AccountData["TestA"] = wallet.AccountECDSA{Password: "TestA", Publickey: a.PublicKey, PrivateKey: *a}
-		UserAccount = "TestA"
-		Pubkey = a.PublicKey
+	// // 使用已有账户，检查目标公钥是否存在
+	// //BAddress := crypto.PubkeyToAddress(Publickey)
+	// // 更改为多钱包账户
+	// for _, v := range wallet.AccountData2 {
+	// 	// k是Account，v是密码，公钥，私钥的结构体
+	// 	if v. == Publickey {
+	// 		// 公钥正确，说明存在对应地址
+	// 		fmt.Println("> 目标地址存在")
+	// 		UserAccount = v.Account
+	// 	}
+	// }
+	// if IsNew == true {
+	// 	fmt.Println("> 目标地址不存在")
+	// 	// 将目标地址设置为新建钱包的公钥 TODO: 暂时无法实现，创建新账户
+	// 	// 创建新的账户与地址 TODO: 后续可以设置为用户自定义账户信息
+	// 	a, _ := crypto.GenerateKey()
+	// 	wallet.AccountData["TestA"] = wallet.AccountECDSA{Password: "TestA", Publickey: a.PublicKey, PrivateKey: *a}
+	// 	UserAccount = "TestA"
+	// 	Pubkey = a.PublicKey
 
-		// 构造返回账户信息
-		reAccount = ToTransferAccount{
-			Account:    "TestA",
-			Password:   "TestA",
-			Publickey:  Pubkey,
-			Privatekey: *a,
-		}
-	}
-
-	BAddress = crypto.PubkeyToAddress(Pubkey)
+	// 	// 构造返回账户信息
+	// 	reAccount = ToTransferAccount{
+	// 		Account:    "TestA",
+	// 		Password:   "TestA",
+	// 		Publickey:  Pubkey,
+	// 		Privatekey: *a,
+	// 	}
+	// }
 
 	// 构造新的UTXO Coinbase交易
-	TX := core.NewCoinbaseTX(FromAddress, BAddress, Money, UserAccount)
+	core.NewCoinbaseTX(FromAddress, BAddress, Money, UserAccount)
 
-	// 返回 reAccount如果是空的，就代表没有新建账户
-	return reAccount, *TX
+	return true
 }
 
 // TODO:根据坐标返回交易
